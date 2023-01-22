@@ -1,20 +1,68 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { ThemeProvider } from 'react-native-elements';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-export default function App() {
+import './config/firebase';
+
+import {useAuth} from './hooks/useAuth';
+// import LoginScreen from './LoginScreen';
+import WelcomeScreen from './screens/Welcome';
+import SignInScreen from './screens/SignInScreen';
+import SignUpScreen from './screens/SignUpScreen';
+import HomeScreen from './screens/HomeScreen';
+import SettingsScreen from './screens/SettingsScreen';
+const Tab = createBottomTabNavigator();
+
+
+const Stack = createNativeStackNavigator();
+const ProfileScreen = ({navigation, route}) => {
+  return <Text>This is {route.params.name}'s profile</Text>;
+};
+
+
+
+const AuthStack = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="ShitGPT" component={WelcomeScreen} />
+        <Stack.Screen name="Sign In" component={SignInScreen} />
+        <Stack.Screen name="Sign Up" component={SignUpScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const UserStack = () => {
+  return (
+    <NavigationContainer>
+        <Tab.Navigator>
+          <Tab.Screen name="Home" component={HomeScreen} options={{
+            tabBarIcon: ({ color, size }) => (
+              <Icon name="home" color={color} size={size} />
+            ),
+          }}/>
+          <Tab.Screen name="Settings" component={SettingsScreen} options={{
+            tabBarIcon: ({ color, size }) => (
+              <Icon name="cog" color={color} size={size} />
+            ),
+          }}/>
+        </Tab.Navigator>
+    </NavigationContainer>
+  );
+}
+
+export default function App() {
+  const { user } = useAuth();
+
+  const auth =  user ? <UserStack /> : <AuthStack />;
+
+  return <ThemeProvider>
+    {auth}
+  </ThemeProvider>;
+}
+
