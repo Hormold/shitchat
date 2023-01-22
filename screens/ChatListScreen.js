@@ -10,22 +10,26 @@ import {
   doc,
   setDoc,
   updateDoc,
-  where
-} from '@firebase/firestore/lite';
-import {useNavigation} from '@react-navigation/native';
-import {useAuth} from '../hooks/useAuth.js';
+  where,
+  query
+} from '@firebase/firestore';
 
-const ChatRoomScreen = () => {
+import {useNavigation} from '@react-navigation/native';
+
+const ChatListScreen = () => {
   const [rooms,
     setRooms] = useState([]);
   const auth = getAuth();
-  const {user} = useAuth();
+  const user = auth.currentUser;
   const firestore = getFirestore(firebase);
   const navigate = useNavigation();
+  const tbl = collection(firestore, 'chats');
+  const parentNavi = useNavigation().getParent('UserStack');
 
   const getChatsFromFirebase = async() => {
     // get all chats from firebase where user is a owner_id
-    const chats = await getDocs(collection(firestore, 'chats').where('owner_id', '==', user.uid));
+    const q = query(tbl, where('owner_id', '==', user.uid));
+    const chats = await getDocs(q);
     chats.forEach((chat) => {
       console.log(chat.data());
     });
@@ -38,42 +42,46 @@ const ChatRoomScreen = () => {
 
   const onCreateRoomPress = () => {
     // Go blank chat screen
-    navigate.navigate('ChatRoom', {room: {}});
+    navigate.navigate('ChatRoom', {room: null});
   };
 
   useEffect(() => {
     getChatsFromFirebase();
+    parentNavi.setOptions({title: 'Chat List'});
+    parentNavi.setOptions({headerShown: false});
   }, []);
 
   const BlankRoom = () => {
-    return (<View style={styles.container}>
+    return (
+      <View style={styles.container}>
         <Text>No chats yet</Text>
         <Pressable onPress={() => onCreateRoomPress()} style={styles.button}>
-            <Text style={styles.buttonTitle}>Create a new chat session</Text>
+          <Text style={styles.buttonTitle}>Create a new chat session</Text>
         </Pressable>
-        </View>);
+      </View>
+    );
   };
 
   const RoomList = () => {
     return (<FlatList
-        style={styles.list}
-        data={rooms}
-        renderItem={({item}) => (
-        <TouchableOpacity onPress={() => onRoomPress(item)}>
-          <View style={styles.listItemContainer}>
-            <Text style={styles.listItemTitle}>{item.name}</Text>
-            <Text style={styles.listItemSubtitle}>{item.lastMessage}</Text>
-            <Text style={styles.listItemSubtitle}>{item.lastMessageTime}</Text>
-          </View>
-        </TouchableOpacity>
-      )}
-        keyExtractor={(item) => item.id}/>);
+      style={styles.list}
+      data={rooms}
+      renderItem={({item}) => (
+      <TouchableOpacity onPress={() => onRoomPress(item)}>
+        <View style={styles.listItemContainer}>
+          <Text style={styles.listItemTitle}>{item.name}</Text>
+          <Text style={styles.listItemSubtitle}>{item.lastMessage}</Text>
+          <Text style={styles.listItemSubtitle}>{item.lastMessageTime}</Text>
+        </View>
+      </TouchableOpacity>
+    )}
+      keyExtractor={(item) => item.id}/>);
   }
 
   return (
     <View style={styles.container}>
-      {rooms.length === 0 && <BlankRoom/>} 
-        {rooms.length > 0 && <RoomList/>}
+      {rooms.length === 0 && <BlankRoom/>}
+      {rooms.length > 0 && <RoomList/>}
     </View>
   );
 }
@@ -97,14 +105,14 @@ const styles = StyleSheet.create({
   },
   listItemContainer: {
     alignItems: 'center',
-    padding: 16,
-},
-listItemTitle: {
-    fontSize: 24,
-},
-listItemSubtitle: {
-    fontSize: 16,
-},
+    padding: 16
+  },
+  listItemTitle: {
+    fontSize: 24
+  },
+  listItemSubtitle: {
+    fontSize: 16
+  }
 });
 
-export default ChatRoomScreen;
+export default ChatListScreen;

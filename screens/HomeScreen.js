@@ -12,12 +12,10 @@ const Stack = createNativeStackNavigator();
 
 const HomeScreen = () => {
   return (
-   <NavigationContainer independent={true}>
-        <Stack.Navigator screenOptions={{headerShown: false}}>
-            <Stack.Screen name="ShitGPT" component={ChatListScreen} />
+        <Stack.Navigator id="HomeStack" screenOptions={{headerShown: false}}>
+            <Stack.Screen name="ChatList" component={ChatListScreen}  />
             <Stack.Screen name="ChatRoom" component={ChatRoomScreen} />
         </Stack.Navigator>
-    </NavigationContainer>
   );
 };
 
