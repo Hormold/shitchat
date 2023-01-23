@@ -12,12 +12,15 @@ const Stack = createNativeStackNavigator();
 
 const HomeScreen = () => {
   return (
-        <Stack.Navigator id="HomeStack" screenOptions={{headerShown: false}}>
-            <Stack.Screen name="ChatList" component={ChatListScreen}  />
-            <Stack.Screen name="ChatRoom" component={ChatRoomScreen} />
-        </Stack.Navigator>
+    <Stack.Navigator
+      id="HomeStack"
+      screenOptions={{
+      headerShown: false
+    }}>
+      <Stack.Screen name="ChatList" component={ChatListScreen}/>
+      <Stack.Screen name="ChatRoom" component={ChatRoomScreen}/>
+    </Stack.Navigator>
   );
 };
-
 
 export default HomeScreen;

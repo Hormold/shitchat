@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {Input, Button} from 'react-native-elements';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import {getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword} from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignUpScreen = () => {
@@ -23,7 +23,7 @@ const SignUpScreen = () => {
       await createUserWithEmailAndPassword(auth, value.email, value.password);
       // Auto login after sign up
       const user = await signInWithEmailAndPassword(auth, value.email, value.password);
-	  await AsyncStorage.setItem("userData", JSON.stringify(user));
+      await AsyncStorage.setItem("userData", JSON.stringify(user));
       //navigation.navigate('Home');
       setValue({
         ...value,

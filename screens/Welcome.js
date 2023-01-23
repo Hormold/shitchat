@@ -6,8 +6,8 @@ import {StyleSheet, Text, View, Button, Image} from 'react-native';
 const WelcomeScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/icon.png')} style={styles.icon}/>
-      <Text style={styles.header}>Welcome to ShitGPT v11</Text>
+      <Image source={require('../assets/ai.png')} style={styles.icon}/>
+      <Text style={styles.header}>Welcome to ShitGPT v1</Text>
       <Text style={styles.subheader}>Sign in or sign up to continue</Text>
       <View style={styles.button}>
         <Button

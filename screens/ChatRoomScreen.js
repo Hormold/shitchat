@@ -90,7 +90,6 @@ const ChatRoomScreen = ({route}) => {
             message.user.avatar = require('../assets/ai.png');
         });
         setChatTitle(chats.data().title || 'Untitled');
-        setTitle(chatTitle);
         setMessages(previousMessages => GiftedChat.append(previousMessages, chatMessages));
         console.log(`Loaded ${chatMessages.length} messages`);
       }
@@ -107,7 +106,7 @@ const ChatRoomScreen = ({route}) => {
     try {
       let chatId = chat;
       const chatData = {
-        title: (chatDoc?chatDoc.chatTitle:chatTitle) || 'Untitled',
+        title: (chatDoc?chatDoc.title:chatTitle) || 'Untitled',
         owner_id: user.uid,
         messages,
         createdAt: chatDoc?chatDoc.createdAt:Math.floor(Date.now() / 1000)
@@ -120,16 +119,12 @@ const ChatRoomScreen = ({route}) => {
         // Create new chat json
         // Generate title for first message from user
         const firstMessage = historyRows.filter((message) => message.user._id === 1)[0];
-        console.log(`First user message:`,firstMessage)
-        const generatedTitle = await generateTitle(firstMessage.text);
-        chatData.title = generatedTitle;
-        console.log(`[saveChatHistory] New chat created: ${chat} with title ${generatedTitle}`);
-
-        setChatTitle(generateTitle);
-
-        setTitle(generateTitle);
-
+        const newTitle = await generateTitle(firstMessage.text);
+        chatData.title = newTitle;
+        console.log(`[saveChatHistory] New chat created: ${chat} with title ${newTitle}`);
+        setChatTitle(newTitle);
         const result = await addDoc(tbl, chatData);
+        chatDoc = chatData;
         chat = result.id;
       } else {
         // Update chat json

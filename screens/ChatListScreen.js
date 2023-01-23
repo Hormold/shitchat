@@ -1,10 +1,19 @@
-import React, {useEffect, useState, useCallback} from 'react';
-import {StyleSheet, Text, View, FlatList, Pressable, TouchableOpacity, Alert, RefreshControl} from 'react-native';
-import { List, Divider } from 'react-native-paper';
+import React, {useEffect, useState} from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  Pressable,
+  TouchableOpacity,
+  Alert,
+  RefreshControl
+} from 'react-native';
+import {List, Divider} from 'react-native-paper';
 import {firebase} from '../config/firebase';
 import {getAuth} from 'firebase/auth';
-import { useFocusEffect } from '@react-navigation/native';
-import {Button, FAB} from 'react-native-paper';
+import {useFocusEffect} from '@react-navigation/native';
+import {FAB} from 'react-native-paper';
 
 import {
   getFirestore,
@@ -24,7 +33,8 @@ import {useNavigation} from '@react-navigation/native';
 const ChatListScreen = () => {
   const [rooms,
     setRooms] = useState([]);
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing,
+    setRefreshing] = useState(false);
   const auth = getAuth();
   const user = auth.currentUser;
   const firestore = getFirestore(firebase);
@@ -39,37 +49,36 @@ const ChatListScreen = () => {
     const chatData = [];
     chats.forEach((chat) => {
       const data = chat.data();
-      const lastMessage = data.messages.reverse()[data.messages.length - 1];
+      const lastMessage = data
+        .messages
+        .reverse()[data.messages.length - 1];
       chatData.push({
         id: chat.id,
         title: data.title || 'No title',
         lastMessage: lastMessage.text || 'No message',
         lastMessageTime: lastMessage.createdAt.seconds || 'No time',
-        createdAt: new Date(data.createdAt * 1000) || Date.now(),
+        createdAt: new Date(data.createdAt * 1000) || Date.now()
       });
     });
     // Sort
     chatData.sort((a, b) => {
       return b.createdAt - a.createdAt;
     });
-    
+
     parentNavi.setOptions({title: 'Chat List'});
-    if(chatData.length) {
-      parentNavi.setOptions({
-        headerShown: true,
-      });
+    if (chatData.length) {
+      parentNavi.setOptions({headerShown: true});
     } else {
       parentNavi.setOptions({headerShown: false});
     }
     setRooms(chatData);
   };
 
-  const handleRefresh = async () => {
+  const handleRefresh = async() => {
     setRefreshing(true);
     await getChatsFromFirebase();
     setRefreshing(false);
   };
-
 
   const deleteChat = async(roomId) => {
     // Delete chat from firebase
@@ -88,39 +97,30 @@ const ChatListScreen = () => {
   };
 
   const onRoomLongPress = (roomId) => {
-    // Ask if user wants to delete the chat
-    // If yes, delete the chat
-    // If no, do nothing
-    Alert.alert(
-      'Delete chat',
-      'Are you sure you want to delete this chat?',
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel'
-        },
-        {
-          text: 'OK',
-          onPress: () => {
-            deleteChat(roomId);
-          }
+    // Ask if user wants to delete the chat If yes, delete the chat If no, do
+    // nothing
+    Alert.alert('Delete chat', 'Are you sure you want to delete this chat?', [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel'
+      }, {
+        text: 'OK',
+        onPress: () => {
+          deleteChat(roomId);
         }
-      ],
-      {cancelable: false}
-    );
+      }
+    ], {cancelable: false});
   };
 
   useEffect(() => {
     getChatsFromFirebase();
-   
+
   }, []);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      getChatsFromFirebase();
-    }, [])
-  );
+  useFocusEffect(React.useCallback(() => {
+    getChatsFromFirebase();
+  }, []));
 
   const BlankRoom = () => {
     return (
@@ -166,47 +166,46 @@ const ChatListScreen = () => {
   };
 
   const RoomList = () => {
-    return (<FlatList
-      style={styles.list}
-      data={rooms}
-      keyExtractor={(item, index) => index}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={handleRefresh}
-        />
+    return (
+      <FlatList
+        style={styles.list}
+        data={rooms}
+        keyExtractor={(item, index) => index}
+        refreshControl={< RefreshControl refreshing = {
+        refreshing
       }
-      renderItem={({item}) => (
-      <TouchableOpacity
-        onPress={() => onRoomPress(item.id)}
-        onLongPress={() => onRoomLongPress(item.id)}
-      >
-        <List.Item
-          title={CutLongText(item.title, 50)}
-          description={CutLongText(item.lastMessage, 90)}
-          left={props => <List.Icon {...props} icon="robot-angry" />}
-          right={props => 
-            <View style={{flexDirection: 'column', alignItems: 'flex-end'}}>
-              <Text style={{fontSize: 12}}>{dateHumanize(item.lastMessageTime)}</Text>
-              <List.Icon {...props} icon="chevron-right" />
-            </View>
-          }
-          style={styles.listItem}
-        />
-      </TouchableOpacity>
-    )}/>);
+      onRefresh = {
+        handleRefresh
+      } />}
+        renderItem={({item}) => (
+        <TouchableOpacity
+          onPress={() => onRoomPress(item.id)}
+          onLongPress={() => onRoomLongPress(item.id)}>
+          <List.Item
+            title={CutLongText(item.title, 50)}
+            description={CutLongText(item.lastMessage, 90)}
+            left={props => <List.Icon {...props} icon="robot-angry"/>}
+            right={props => <View
+            style={{
+            flexDirection: 'column',
+            alignItems: 'flex-end'
+          }}>
+            <Text style={{
+              fontSize: 12
+            }}>{dateHumanize(item.lastMessageTime)}</Text>
+            <List.Icon {...props} icon="chevron-right"/>
+          </View>}
+            style={styles.listItem}/>
+        </TouchableOpacity>
+      )}/>
+    );
   }
 
   return (
     <View style={styles.container}>
       {rooms.length === 0 && <BlankRoom/>}
       {rooms.length > 0 && <RoomList/>}
-      <FAB
-        style={styles.fab}
-        small
-        icon="plus"
-        onPress={() => onCreateRoomPress()}
-      />
+      <FAB style={styles.fab} small icon="plus" onPress={() => onCreateRoomPress()}/>
     </View>
   );
 }
@@ -241,20 +240,19 @@ const styles = StyleSheet.create({
   listItem: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderBottomColor: '#ccc'
   },
   list: {
     flex: 1,
     alignSelf: 'stretch',
-    textAlign: 'center',
+    textAlign: 'center'
   },
   fab: {
     position: 'absolute',
     margin: 16,
     right: 0,
     bottom: 0
-  },
-
+  }
 });
 
 export default ChatListScreen;

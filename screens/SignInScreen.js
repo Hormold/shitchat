@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button } from 'react-native-elements';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const auth = getAuth();
@@ -35,9 +35,31 @@ const SignInScreen = () => {
     }
   }
 
+  const onForgetPassword = async () => {
+    if (value.email === '') {
+      setValue({
+        ...value,
+        error: 'Email is mandatory.'
+      })
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, value.email);
+      setValue({
+        ...value,
+        error: 'Password reset email sent.'
+      })
+    } catch (error) {
+      setValue({
+        ...value,
+        error: error.message,
+      })
+    }
+  }
+
   return (
     <View style={styles.container}>
-      <Text>Signin screen!</Text>
 
       {!!value.error && <View style={styles.error}><Text>{value.error}</Text></View>}
 
@@ -64,8 +86,11 @@ const SignInScreen = () => {
             size={16}
           />}
         />
+        
 
         <Button title="Sign in" buttonStyle={styles.control} onPress={signIn} />
+
+        <Button title="Forget password" buttonStyle={styles.control2} onPress={() => onForgetPassword()} />
       </View>
     </View>
   );
@@ -82,11 +107,17 @@ const styles = StyleSheet.create({
 
   controls: {
     flex: 1,
+    alignItems: 'center',
   },
 
   control: {
     marginTop: 10,
-	width: 300,
+	  width: 300,
+  },
+
+  control2: {
+    marginTop: 10,
+    width: 200,
   },
 
   error: {
