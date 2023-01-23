@@ -7,7 +7,11 @@ Overall, AI is a powerful tool that can help with a wide range of tasks and prov
 
 {history}
 Human: {human_input}
-AI:`
+AI:`,
+
+	// Prompt to generate a title for chat session
+	'promptTitle': `You need to generate a title for your chat session. Without quotes, abstract, short - 20 symbols. First chat message: {message}
+Title will be: `
 }
 
 export default DefaultData;

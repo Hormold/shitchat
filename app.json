@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "shitchat",
-    "slug": "shitchat",
+    "slug": "gptchat",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -28,6 +28,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "bf2b911c-d40b-4931-a2ba-382d8ae152b3"
+      }
+    },
+    "owner": "hormold"
   }
 }
