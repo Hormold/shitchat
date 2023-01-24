@@ -1,27 +1,45 @@
 // Welcome Screen
 
-import React from 'react';
-import {StyleSheet, Text, View, Button, Image} from 'react-native';
-
+import React, { useEffect } from 'react';
+import {StyleSheet, Text, View, Image} from 'react-native';
+import { Button } from 'react-native-paper';
 const WelcomeScreen = ({navigation}) => {
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: false
+    });
+  }, []);
+
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/ai.png')} style={styles.icon}/>
-      <Text style={styles.header}>Welcome to ShitGPT v1</Text>
-      <Text style={styles.subheader}>Sign in or sign up to continue</Text>
+      <Image source={require('../assets/icon.png')} style={styles.icon} />
+      <Text style={styles.header}>Welcome to ShitGPT*</Text>
+      <Text style={styles.subheader}>This is a APP that uses GPT-3{"\n"} to generate responses.{"\n"}{"\n"} You should have an{"\n"}OpenAI API key to use this app.</Text>
       <View style={styles.button}>
         <Button
-          title="Sign In"
+          mode="contained"
+          icon="login"
           onPress={() => navigation.navigate('Sign In')}
-          buttonStyle={styles.button}/>
+          buttonStyle={styles.button}>
+          Sign In
+          </Button>
       </View>
       <View style={styles.button}>
         <Button
-          title="Sign Up"
+          mode="contained"
+          icon="account-plus"
           onPress={() => navigation.navigate('Sign Up')}
           style={styles.button}
-          buttonStyle={styles.button}/>
+          buttonStyle={styles.button}>
+          Sign Up
+          </Button>
       </View>
+
+      <View>
+        <Text style={styles.smallHintMuted}>* - Smart Hyperreal Innvoative Transformative GPT</Text>
+      </View>
+      
     </View>
   );
 };
@@ -48,7 +66,13 @@ const styles = StyleSheet.create({
   },
   subheader: {
     fontSize: 15,
-    marginBottom: 40
+    marginBottom: 40,
+    textAlign: 'center'
+  },
+  smallHintMuted: {
+    fontSize: 10,
+    color: '#999',
+    marginTop: 30,
   }
 });
 

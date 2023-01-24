@@ -1,10 +1,12 @@
+import dotenv from 'dotenv';
+dotenv.config();
 module.exports = {
   "expo": {
     "name": "ShitGPT",
     "slug": "shitchat",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/ai.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -22,7 +24,7 @@ module.exports = {
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/ai.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#FFFFFF"
       }
     },

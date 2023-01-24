@@ -4,6 +4,7 @@ import {View, Text, StyleSheet, Alert} from 'react-native';
 import {TextInput, Button, FAB} from 'react-native-paper';
 import {Picker} from '@react-native-picker/picker';
 import {firebase} from '../config/firebase';
+import {sendPasswordResetEmail} from '@firebase/auth';
 import {
   getFirestore,
   collection,
@@ -14,14 +15,8 @@ import {
   updateDoc
 } from '@firebase/firestore/lite';
 import {getAuth} from 'firebase/auth';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const models = [
-  'text-davinci-003', 
-  'text-ada-001',
-  'text-babbage-001',
-  'text-curie-001',
-];
+const models = ['text-davinci-003', 'text-ada-001', 'text-babbage-001', 'text-curie-001'];
 
 export default function SettingsScreen() {
   const [openaiKey,
@@ -32,7 +27,6 @@ export default function SettingsScreen() {
   const [openaiModel,
     setOpenaiModel] = useState('text-davinci-003');
 
-  
   const firestore = getFirestore(firebase);
   const auth = getAuth();
   const user = auth.currentUser;
@@ -51,7 +45,10 @@ export default function SettingsScreen() {
       setOpenaiModel(docSnap.data().model)
     } else {
       // Create a new document, blank
-      setDoc(userSettings, {openaiKey: '', model: 'text-davinci-003'});
+      setDoc(userSettings, {
+        openaiKey: '',
+        model: 'text-davinci-003'
+      });
     }
   };
 
@@ -76,7 +73,7 @@ export default function SettingsScreen() {
       });
 
       const json = await response.json();
-      if(!json.choices)
+      if (!json.choices) 
         throw new Error('Invalid API Key');
       Alert.alert('API Key is valid!');
     } catch (error) {
@@ -85,13 +82,26 @@ export default function SettingsScreen() {
     }
   }
 
+  const changePassword = async(auth) => {
+    // change password
+    const email = auth.currentUser.email;
+    sendPasswordResetEmail(auth, email).then(() => {
+      Alert.alert('Password reset email sent!');
+    }).catch((error) => {
+      Alert.alert('Error sending password reset email.');
+    });
+  };
+
   useEffect(() => {
     getUserData();
     console.log('SettingsScreen useEffect called')
   }, []);
 
   const onSettingsUpdate = async() => {
-    updateDoc(userSettings, {openaiKey: openaiKey, model: openaiModel});
+    updateDoc(userSettings, {
+      openaiKey: openaiKey,
+      model: openaiModel
+    });
     Alert.alert('Settings updated!');
   };
 
@@ -107,56 +117,79 @@ export default function SettingsScreen() {
         underlineColorAndroid="transparent"
         autoCapitalize="none"/>
 
-      <View style={{...styles.howto, margin: 10}}>
-      <Text style={{...styles.small}}>How to get API Key:</Text>
-      <Text style={{...styles.small, marginTop: 10}}>
-        1. Go to https://beta.openai.com/ and sign up for an account.
-      </Text>
-      <Text style={{...styles.small, marginTop: 10}}>
-        2. Go to https://beta.openai.com/account/api-keys and create a new API key.
-      </Text>
-      <Text style={{...styles.small, marginTop: 10}}>
-        3. Copy the key and paste it into the text box above.
-      </Text>
+      <View style={{
+        ...styles.howto,
+        margin: 10
+      }}>
+        <Text style={{
+          ...styles.small
+        }}>How to get API Key:</Text>
+        <Text style={{
+          ...styles.small,
+          marginTop: 10
+        }}>
+          1. Go to https://beta.openai.com/ and sign up for an account.
+        </Text>
+        <Text style={{
+          ...styles.small,
+          marginTop: 10
+        }}>
+          2. Go to https://beta.openai.com/account/api-keys and create a new API key.
+        </Text>
+        <Text style={{
+          ...styles.small,
+          marginTop: 10
+        }}>
+          3. Copy the key and paste it into the text box above.
+        </Text>
       </View>
 
-      <Text style={{...styles.title, marginTop: 10}}>OpenAI Model:</Text>
+      <Text style={{
+        ...styles.title,
+        marginTop: 10
+      }}>OpenAI Model:</Text>
       <Picker
         selectedValue={openaiModel}
-        style={{height: 50}}
+        style={{
+        height: 50
+      }}
         onValueChange={(itemValue, itemIndex) => setOpenaiModel(itemValue)}>
         {models.map((model) => {
-          return (
-            <Picker.Item label={model} value={model}/>
-          )
+          return (<Picker.Item label={model} value={model} key={model}/>)
         })}
       </Picker>
 
-      <View style={{
-        flexDirection: 'row', justifyContent: 'space-between'
-      }}>
+      <View style={styles.row}>
         <View style={styles.buttonContainer}>
-        <Button
-          mode='contained'
-          onPress={() => onSettingsUpdate()}
-          style={styles.button}>
-          Update
-        </Button>
+          <Button
+            mode='elevated'
+            onPress={() => onSettingsUpdate()}
+            style={styles.button}>
+            Update
+          </Button>
 
         </View>
         <View style={styles.buttonContainer}>
-        <Button
-          mode='contained'
-          onPress={() => testApiKey(openaiKey)}
-          style={styles.button2}>
-          Test API Key
-        </Button>
+          <Button
+            mode='contained'
+            onPress={() => testApiKey(openaiKey)}
+            style={styles.button2}>
+            Test API Key
+          </Button>
+        </View>
+      </View>
+      <View style={styles.row}>
+        <View style={styles.buttonContainer}>
+          <Button
+            mode='contained'
+            onPress={() => changePassword(auth)}
+            style={styles.button}>
+            Change Password
+          </Button>
         </View>
 
       </View>
-
-      <FAB icon="logout" style={styles.fab} onPress={() => signOut(auth)}/>
-
+      <FAB icon="logout" style={styles.fab} onPress= { () => signOut(auth) }/>
     </View>
   );
 }
@@ -186,30 +219,32 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 16,
-    flex: 1,
+    flex: 1
   },
 
   button: {
-    marginRight: 1,
-    
+    marginRight: 1
   },
 
   button2: {
-    backgroundColor: '#ff0000',
+    backgroundColor: '#ff0000'
   },
 
   small: {
     fontSize: 8,
-    color: '#fff',
+    color: '#fff'
   },
 
   howto: {
     backgroundColor: '#201f1e',
     borderRadius: 3,
     width: 350,
-    padding: 5,
-  }
+    padding: 5
+  },
 
-
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
 
 });
