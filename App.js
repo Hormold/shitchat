@@ -8,7 +8,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 import './config/firebase';
 import {useAuth} from './hooks/useAuth';
-// import LoginScreen from './LoginScreen';
 import WelcomeScreen from './screens/Welcome';
 import SignInScreen from './screens/SignInScreen';
 import SignUpScreen from './screens/SignUpScreen';
