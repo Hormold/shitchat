@@ -27,6 +27,9 @@ export default function SettingsScreen() {
   const [openaiModel,
     setOpenaiModel] = useState('text-davinci-003');
 
+  const [serpApiKey, 
+    setSerpApiKey] = useState('');
+
   const firestore = getFirestore(firebase);
   const auth = getAuth();
   const user = auth.currentUser;
@@ -43,11 +46,13 @@ export default function SettingsScreen() {
     if (docSnap.exists()) {
       setOpenaiKey(docSnap.data().openaiKey)
       setOpenaiModel(docSnap.data().model)
+      setSerpApiKey(docSnap.data().serpApiKey)
     } else {
       // Create a new document, blank
       setDoc(userSettings, {
         openaiKey: '',
-        model: 'text-davinci-003'
+        model: 'text-davinci-003',
+        serpApiKey: ''
       });
     }
   };
@@ -100,7 +105,8 @@ export default function SettingsScreen() {
   const onSettingsUpdate = async() => {
     updateDoc(userSettings, {
       openaiKey: openaiKey,
-      model: openaiModel
+      model: openaiModel,
+      serpApiKey: serpApiKey
     });
     Alert.alert('Settings updated!');
   };
@@ -158,6 +164,30 @@ export default function SettingsScreen() {
           return (<Picker.Item label={model} value={model} key={model}/>)
         })}
       </Picker>
+
+      <Text style={{
+        ...styles.title,
+        marginTop: 10
+      }}>SerpApi Key:</Text>
+      <TextInput
+        style={styles.input}
+        placeholder={'SerpApi Key'}
+        placeholderTextColor="#aaaaaa"
+        onChangeText={(text) => setSerpApiKey(text)}
+        value={serpApiKey}
+        underlineColorAndroid="transparent"
+        autoCapitalize="none"/>
+
+      <View style={{
+        ...styles.howto,
+        marginTop: 10,
+        padding: 10
+      }}>
+        <Text style={{ color: 'white' }}>
+          To use serp api, start message with "!"
+        </Text>
+      </View>
+      
 
       <View style={styles.row}>
         <View style={styles.buttonContainer}>

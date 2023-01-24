@@ -3,7 +3,7 @@ dotenv.config();
 module.exports = {
   "expo": {
     "name": "ShitGPT",
-    "slug": "shitchat",
+    "slug": "gptchat",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -28,6 +28,9 @@ module.exports = {
         "backgroundColor": "#FFFFFF"
       }
     },
+	"android": {
+		"package": "com.hormold.shitgpt"
+	},
     "web": {
       "favicon": "./assets/favicon.png"
     },
